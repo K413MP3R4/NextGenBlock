@@ -19,6 +19,7 @@ venv/
 # Distribution files
 build/
 dist/
+release/
 *.egg-info/
 
 # Windows

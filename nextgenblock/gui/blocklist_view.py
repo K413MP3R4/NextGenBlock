@@ -1,11 +1,13 @@
 """Vue des listes de blocage IP et DNS."""
 from __future__ import annotations
 
-from PyQt6.QtCore import Qt, QThread, pyqtSignal
+import time
+
+from PyQt6.QtCore import Qt, QThread, QTimer, pyqtSignal
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QListWidget, QListWidgetItem,
     QPushButton, QLineEdit, QInputDialog, QMessageBox, QSplitter, QTabWidget,
-    QTextEdit
+    QTextEdit, QTableWidget, QTableWidgetItem, QHeaderView
 )
 
 
@@ -58,7 +60,12 @@ class BlocklistView(QWidget):
         tabs.addTab(self._build_ip_tab(), "Listes IP")
         tabs.addTab(self._build_dns_tab(), "Listes DNS")
         tabs.addTab(self._build_ti_tab(), "Threat Intelligence")
+        tabs.addTab(self._build_alerts_tab(), "Alertes")
         root.addWidget(tabs)
+
+        self.alerts_timer = QTimer(self)
+        self.alerts_timer.timeout.connect(self.refresh_alerts)
+        self.alerts_timer.start(1500)
 
     # ---- Onglet IP ---------------------------------------------------
 
@@ -269,3 +276,64 @@ class BlocklistView(QWidget):
     def _on_ti_done(self, _name, _n) -> None:
         self.ti_info.setText(f"IoCs en base : {self.orch.ti.total_iocs():,}")
         self.refresh_ti_list()
+
+    # ---- Onglet Alertes ----------------------------------------------
+
+    def _build_alerts_tab(self) -> QWidget:
+        w = QWidget()
+        lay = QVBoxLayout(w)
+
+        info = QLabel("Dernieres alertes IDS / IPS detectees en temps reel.")
+        info.setObjectName("Subtitle")
+        lay.addWidget(info)
+        self.alerts_info = info
+
+        actions = QHBoxLayout()
+        refresh_btn = QPushButton("Actualiser")
+        refresh_btn.setObjectName("Primary")
+        refresh_btn.clicked.connect(self.refresh_alerts)
+        actions.addWidget(refresh_btn)
+        actions.addStretch()
+        lay.addLayout(actions)
+
+        self.alerts_table = QTableWidget(0, 6)
+        self.alerts_table.setHorizontalHeaderLabels([
+            "Heure", "Gravite", "Regle", "Source", "Cible", "Message"
+        ])
+        self.alerts_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.alerts_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        header = self.alerts_table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
+        header.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
+        header.setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents)
+        header.setSectionResizeMode(3, QHeaderView.ResizeMode.ResizeToContents)
+        header.setSectionResizeMode(4, QHeaderView.ResizeMode.ResizeToContents)
+        header.setSectionResizeMode(5, QHeaderView.ResizeMode.Stretch)
+        lay.addWidget(self.alerts_table)
+
+        self.refresh_alerts()
+        return w
+
+    def refresh_alerts(self) -> None:
+        if not hasattr(self, "alerts_table"):
+            return
+
+        alerts = list(self.orch.ids.alerts)
+        alerts.reverse()
+        self.alerts_info.setText(f"Dernieres alertes IDS / IPS : {len(alerts):,}")
+        self.alerts_table.setRowCount(len(alerts))
+
+        for row, alert in enumerate(alerts):
+            values = [
+                time.strftime("%H:%M:%S", time.localtime(alert.timestamp)),
+                alert.severity,
+                alert.rule,
+                alert.src_ip,
+                alert.dst_ip,
+                alert.message,
+            ]
+            for col, value in enumerate(values):
+                item = QTableWidgetItem(str(value))
+                if col in (1, 2):
+                    item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                self.alerts_table.setItem(row, col, item)

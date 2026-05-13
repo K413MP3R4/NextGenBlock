@@ -1,10 +1,14 @@
 """Vue Paramètres."""
 from __future__ import annotations
 
+import subprocess
+import sys
+from pathlib import Path
+
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QFormLayout, QCheckBox, QSpinBox,
     QLineEdit, QPushButton, QLabel, QFrame, QHBoxLayout, QComboBox,
-    QMessageBox
+    QMessageBox, QApplication
 )
 
 from ..utils.config import Config
@@ -126,7 +130,11 @@ class SettingsView(QWidget):
         save_btn = QPushButton("Enregistrer")
         save_btn.setObjectName("Primary")
         save_btn.clicked.connect(self.save)
+        uninstall_btn = QPushButton("Desinstaller")
+        uninstall_btn.setObjectName("Danger")
+        uninstall_btn.clicked.connect(self.uninstall_app)
         actions.addStretch()
+        actions.addWidget(uninstall_btn)
         actions.addWidget(save_btn)
         root.addLayout(actions)
         root.addStretch()
@@ -183,3 +191,27 @@ class SettingsView(QWidget):
         if hasattr(win, "mode_label") and hasattr(win, "_mode_text"):
             win.mode_label.setText(win._mode_text())
         QMessageBox.information(self, "Parametres", "Configuration appliquee.")
+
+    def uninstall_app(self) -> None:
+        app_dir = Path(sys.executable).resolve().parent
+        uninstallers = sorted(app_dir.glob("unins*.exe"))
+        if not uninstallers:
+            QMessageBox.information(
+                self,
+                "Desinstallation",
+                "Le desinstallateur sera disponible ici quand NextGenBlock sera installe avec le Setup officiel.",
+            )
+            return
+
+        choice = QMessageBox.warning(
+            self,
+            "Desinstaller NextGenBlock",
+            "NextGenBlock va se fermer et lancer le desinstallateur. Continuer ?",
+            QMessageBox.StandardButton.Cancel | QMessageBox.StandardButton.Ok,
+            QMessageBox.StandardButton.Cancel,
+        )
+        if choice != QMessageBox.StandardButton.Ok:
+            return
+
+        subprocess.Popen([str(uninstallers[0])], cwd=str(app_dir))
+        QApplication.quit()

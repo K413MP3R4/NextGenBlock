@@ -3,12 +3,18 @@ from __future__ import annotations
 
 import collections
 import time
+from pathlib import Path
 from typing import Optional
 
 from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QFrame
 )
+
+
+APP_ROOT = Path(__file__).resolve().parents[2]
+APP_LOGO = APP_ROOT / "assets" / "nextgenblock.png"
 
 
 def _card(title: str, value_widget: QLabel) -> QFrame:
@@ -40,6 +46,18 @@ class Dashboard(QWidget):
         hero.setObjectName("Hero")
         header = QHBoxLayout(hero)
         header.setContentsMargins(20, 16, 20, 16)
+        if APP_LOGO.exists():
+            logo = QLabel()
+            pixmap = QPixmap(str(APP_LOGO)).scaled(
+                36, 36,
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation,
+            )
+            logo.setPixmap(pixmap)
+            logo.setFixedSize(38, 38)
+            logo.setObjectName("HeroLogo")
+            logo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            header.addWidget(logo)
         title = QLabel("NextGenBlock")
         title.setObjectName("HeroTitle")
         header.addWidget(title)

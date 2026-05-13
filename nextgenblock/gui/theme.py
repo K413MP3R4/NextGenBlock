@@ -12,14 +12,14 @@ QMainWindow, QWidget {
 }
 
 QFrame#Card {
-    background-color: #1b1d24;
-    border: 1px solid #2b2f3a;
+    background-color: #1b1e26;
+    border: 1px solid #2d3342;
     border-radius: 8px;
 }
 
 QFrame#Hero {
-    background-color: #191b22;
-    border: 1px solid #303442;
+    background-color: #171b24;
+    border: 1px solid #334155;
     border-radius: 8px;
 }
 
@@ -33,6 +33,12 @@ QLabel#HeroTitle {
     font-size: 24pt;
     font-weight: 700;
     color: #ffffff;
+    background: transparent;
+}
+
+QLabel#HeroLogo {
+    background: transparent;
+    padding-right: 6px;
 }
 
 QLabel#Subtitle {
@@ -43,13 +49,13 @@ QLabel#Subtitle {
 QLabel#MetricValue {
     font-size: 25pt;
     font-weight: 700;
-    color: #ffffff;
+    color: #f8fafc;
 }
 
 QLabel#InfoValue {
     font-size: 12pt;
     font-weight: 600;
-    color: #ffffff;
+    color: #dbeafe;
 }
 
 QLabel#MetricLabel {
@@ -59,9 +65,30 @@ QLabel#MetricLabel {
     letter-spacing: 1px;
 }
 
-QLabel#StatusOK    { color: #4ade80; font-weight: 600; }
-QLabel#StatusWarn  { color: #fbbf24; font-weight: 600; }
-QLabel#StatusError { color: #f87171; font-weight: 600; }
+QLabel#StatusOK {
+    color: #86efac;
+    background-color: rgba(34, 197, 94, 0.12);
+    border: 1px solid rgba(34, 197, 94, 0.24);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-weight: 600;
+}
+QLabel#StatusWarn {
+    color: #fde68a;
+    background-color: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-weight: 600;
+}
+QLabel#StatusError {
+    color: #fecaca;
+    background-color: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-weight: 600;
+}
 
 QPushButton {
     background-color: #2a2d39;
@@ -90,14 +117,14 @@ QPushButton#Danger {
 QPushButton#Danger:hover { background-color: #ef4444; }
 
 QListWidget, QTableWidget, QTreeWidget, QTextEdit {
-    background-color: #1b1d24;
-    border: 1px solid #2b2f3a;
+    background-color: #1b1e26;
+    border: 1px solid #2d3342;
     border-radius: 6px;
     selection-background-color: #2563eb;
     alternate-background-color: #20232c;
 }
 QHeaderView::section {
-    background-color: #22242e;
+    background-color: #202636;
     color: #b0b3bd;
     border: none;
     padding: 6px 8px;
@@ -117,7 +144,7 @@ QTabBar::tab {
 }
 QTabBar::tab:selected {
     color: #ffffff;
-    border-bottom: 2px solid #2563eb;
+    border-bottom: 2px solid #38bdf8;
 }
 QTabBar::tab:hover:!selected { color: #b0b3bd; }
 
@@ -129,7 +156,7 @@ QLineEdit, QComboBox, QSpinBox {
     color: #ffffff;
 }
 QLineEdit:focus, QComboBox:focus, QSpinBox:focus {
-    border-color: #2563eb;
+    border-color: #38bdf8;
 }
 QCheckBox::indicator {
     width: 16px; height: 16px;
@@ -143,9 +170,9 @@ QCheckBox::indicator:checked {
 }
 
 QStatusBar {
-    background: #14151a;
+    background: #121821;
     color: #8a8c95;
-    border-top: 1px solid #2a2d39;
+    border-top: 1px solid #263244;
 }
 
 QScrollBar:vertical {

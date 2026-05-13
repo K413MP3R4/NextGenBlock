@@ -48,6 +48,9 @@ class MainWindow(QMainWindow):
         self._engine_running = False
         self._really_quit = False
         self._tray_notice_shown = False
+        self._auto_hide_remaining = 0
+        self._auto_hide_timer = QTimer(self)
+        self._auto_hide_timer.timeout.connect(self._update_auto_hide_countdown)
         self._update_manager = UpdateManager()
         self._build_tray()
 
@@ -60,10 +63,7 @@ class MainWindow(QMainWindow):
         if self.config.auto_start_engine:
             QTimer.singleShot(250, self.toggle_engine)
             if self.config.auto_hide_after_start_seconds > 0:
-                QTimer.singleShot(
-                    self.config.auto_hide_after_start_seconds * 1000,
-                    self.hide_to_tray,
-                )
+                QTimer.singleShot(500, self.start_auto_hide_countdown)
         if self.config.auto_update_on_start:
             QTimer.singleShot(1000, self.update_in_background)
         QTimer.singleShot(0, self.snap_to_left)
@@ -195,6 +195,8 @@ class MainWindow(QMainWindow):
         self._update_tray_actions()
 
     def show_from_tray(self) -> None:
+        self._auto_hide_timer.stop()
+        self._auto_hide_remaining = 0
         self.showNormal()
         self.snap_to_left()
         self.raise_()
@@ -205,11 +207,68 @@ class MainWindow(QMainWindow):
         if not screen:
             return
         available = screen.availableGeometry()
-        width = max(520, available.width() // 2)
-        self.setGeometry(available.left(), available.top(), width, available.height())
+        target_outer_width = max(520, available.width() // 2)
+        target_outer_height = available.height()
+
+        # QMainWindow.setGeometry() positions the client area, while the native
+        # title bar lives in the surrounding frame. Account for that frame so
+        # minimize/maximize/close remain visible after snapping to the screen.
+        frame = self.frameGeometry()
+        client = self.geometry()
+        left_frame = client.left() - frame.left()
+        top_frame = client.top() - frame.top()
+        right_frame = frame.right() - client.right()
+        bottom_frame = frame.bottom() - client.bottom()
+
+        target_client_width = max(520, target_outer_width - left_frame - right_frame)
+        target_client_height = max(400, target_outer_height - top_frame - bottom_frame)
+        self.resize(target_client_width, target_client_height)
+        self.move(available.left() + left_frame, available.top() + top_frame)
+        self._correct_snap_to_available_area()
+        QTimer.singleShot(50, self._correct_snap_to_available_area)
+
+    def _correct_snap_to_available_area(self) -> None:
+        screen = self.screen() or QApplication.primaryScreen()
+        if not screen:
+            return
+        available = screen.availableGeometry()
+        frame = self.frameGeometry()
+
+        height_delta = available.height() - frame.height()
+        if height_delta:
+            self.resize(self.width(), max(400, self.height() + height_delta))
+            frame = self.frameGeometry()
+
+        self.move(
+            self.x() + available.left() - frame.left(),
+            self.y() + available.top() - frame.top(),
+        )
+
+    def start_auto_hide_countdown(self) -> None:
+        if not self.config.minimize_to_tray or not self.tray or self._really_quit:
+            return
+        self._auto_hide_remaining = self.config.auto_hide_after_start_seconds
+        if self._auto_hide_remaining <= 0:
+            return
+        self._update_auto_hide_countdown()
+        self._auto_hide_timer.start(1000)
+
+    def _update_auto_hide_countdown(self) -> None:
+        if self._auto_hide_remaining <= 0:
+            self._auto_hide_timer.stop()
+            self.hide_to_tray()
+            return
+
+        suffix = "s" if self._auto_hide_remaining > 1 else ""
+        self.status_msg.setText(
+            f"Reduction dans la zone de notification dans {self._auto_hide_remaining} seconde{suffix}"
+        )
+        self._auto_hide_remaining -= 1
 
     def hide_to_tray(self) -> None:
         if self.config.minimize_to_tray and self.tray and not self._really_quit:
+            self._auto_hide_timer.stop()
+            self._auto_hide_remaining = 0
             self.hide()
 
     def quit_from_tray(self) -> None:

@@ -113,6 +113,26 @@ Pour retirer ce demarrage automatique :
 Desinstaller_Demarrage_Windows.cmd
 ```
 
+## Installateur Windows
+
+Pour distribuer NextGenBlock proprement, generez un installateur Windows :
+
+```bat
+Build_Installer.cmd
+```
+
+Prerequis sur la machine de build :
+
+- dependances Python installees avec `pip install -r requirements.txt`
+- `PyInstaller`
+- `Inno Setup 6`
+
+Le script cree d'abord `dist\NextGenBlock\NextGenBlock.exe`, puis produit
+`release\NextGenBlock-Setup-1.0.0.exe`. Cet installateur ajoute les raccourcis,
+l'icone officielle, l'option de demarrage Windows et un desinstallateur standard
+dans le dossier installe. Le bouton **Desinstaller** est aussi disponible dans
+les parametres de l'application installee.
+
 La mise a jour automatique est non bloquante : si l'application est installee
 depuis un depot Git, elle peut lancer une mise a jour en arriere-plan au
 demarrage. Sinon, elle indique simplement qu'aucune source de mise a jour n'est
