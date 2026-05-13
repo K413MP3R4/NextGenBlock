@@ -1,0 +1,15 @@
+# Capture de paquets (noyau Windows)
+pydivert>=2.1.0
+
+# Interface graphique
+PyQt6>=6.5.0
+pyqtgraph>=0.13.0
+
+# Réseau / processus
+psutil>=5.9.0
+dnspython>=2.4.0
+
+# Données / utilitaires
+requests>=2.31.0
+ipaddress>=1.0.23
+pyyaml>=6.0
