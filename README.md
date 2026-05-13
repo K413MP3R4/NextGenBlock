@@ -2,6 +2,8 @@
 
 **NextGenBlock est un pare-feu nouvelle génération pour Windows, conçu pour moderniser et remplacer les solutions héritées comme PeerBlock.**
 
+📦 **[Télécharger la version 1.0.0](https://github.com/K413MP3R4/NextGenBlock/releases/tag/v1.0.0)**
+
 NextGenBlock fournit une plateforme de sécurité réseau professionnelle : filtrage IP et DNS, inspection profonde des paquets, détection/prévention d'intrusion, géolocalisation et analyse de menaces.
 
 ## À propos
@@ -9,7 +11,7 @@ NextGenBlock fournit une plateforme de sécurité réseau professionnelle : filt
 NextGenBlock a été développé pour offrir une sécurité réseau avancée aux utilisateurs Windows en associant :
 
 - une interface moderne et ergonomique en PyQt6,
-- une architecture modulaire pour les mises à jour et l’évolution,
+- une architecture modulaire pour les mises à jour et l'évolution,
 - un moteur capable de filtrer le trafic par application, protocole et pays,
 - une solution open source supportée par une licence MIT.
 
