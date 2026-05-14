@@ -1,3 +1,5 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 # NextGenBlock
 
 **NextGenBlock est un pare-feu nouvelle génération pour Windows, conçu pour moderniser et remplacer les solutions héritées comme PeerBlock.**
@@ -149,4 +151,4 @@ juridictions.
 
 ## Licence
 
-MIT — voir LICENSE
+MIT — voir [LICENSE](LICENSE) et [NOTICE](NOTICE.md)
